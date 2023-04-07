@@ -2915,6 +2915,7 @@ where
         });
         let (submission_index, data) =
             Context::queue_submit(self, &queue, queue_data, command_buffers);
+
         (submission_index.into(), Arc::new(data) as _)
     }
 

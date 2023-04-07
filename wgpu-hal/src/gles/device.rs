@@ -508,7 +508,12 @@ impl crate::Device<super::Api> for super::Device {
             map_flags |= glow::MAP_WRITE_BIT;
         }
 
-        let raw = Some(unsafe { gl.create_buffer() }.map_err(|_| crate::DeviceError::OutOfMemory)?);
+        // shohei: error - buffer
+        let raw = Some(unsafe { gl.create_buffer() }.map_err(|err| {
+            log::info!("shohei err {err}");
+            crate::DeviceError::OutOfMemory
+        })?);
+
         unsafe { gl.bind_buffer(target, raw) };
         let raw_size = desc
             .size

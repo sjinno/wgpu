@@ -700,6 +700,8 @@ impl<A: HalApi> Device<A> {
             usage,
             memory_flags,
         };
+
+        // shohei: error - buffer
         let buffer = unsafe { self.raw.create_buffer(&hal_desc) }.map_err(DeviceError::from)?;
 
         Ok(resource::Buffer {
@@ -3559,10 +3561,12 @@ impl<G: GlobalIdentityHandlerFactory> Global<G> {
                     .add(trace::Action::CreateBuffer(fid.id(), desc));
             }
 
+            // shohei: error
             let mut buffer = match device.create_buffer(device_id, desc, false) {
                 Ok(buffer) => buffer,
                 Err(e) => break e,
             };
+
             let ref_count = buffer.life_guard.add_ref();
 
             let buffer_use = if !desc.mapped_at_creation {
@@ -3655,6 +3659,7 @@ impl<G: GlobalIdentityHandlerFactory> Global<G> {
         };
 
         let id = fid.assign_error(desc.label.borrow_or_default(), &mut token);
+
         (id, Some(error))
     }
 
@@ -5509,6 +5514,7 @@ impl<G: GlobalIdentityHandlerFactory> Global<G> {
                 break error;
             }
 
+            // shohei: error - swapchain
             match unsafe {
                 A::get_surface_mut(surface)
                     .unwrap()
@@ -5517,6 +5523,7 @@ impl<G: GlobalIdentityHandlerFactory> Global<G> {
             } {
                 Ok(()) => (),
                 Err(error) => {
+                    log::info!("shohei error {error}");
                     break match error {
                         hal::SurfaceError::Outdated | hal::SurfaceError::Lost => E::InvalidSurface,
                         hal::SurfaceError::Device(error) => E::Device(error.into()),
@@ -5524,7 +5531,7 @@ impl<G: GlobalIdentityHandlerFactory> Global<G> {
                             log::error!("surface configuration failed: {}", message);
                             E::InvalidSurface
                         }
-                    }
+                    };
                 }
             }
 

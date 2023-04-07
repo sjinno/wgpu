@@ -285,6 +285,7 @@ impl crate::Surface<super::Api> for Surface {
             unsafe { gl.delete_texture(texture) };
         }
 
+        // shohei: error - swapchain
         self.texture = Some(unsafe { gl.create_texture() }.map_err(|error| {
             log::error!("Internal swapchain texture creation failed: {error}");
             crate::DeviceError::OutOfMemory

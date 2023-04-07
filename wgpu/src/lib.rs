@@ -2118,6 +2118,7 @@ impl Device {
             map_context.initial_range = 0..desc.size;
         }
 
+        // shohei: error - buffer
         let (id, data) =
             DynContext::device_create_buffer(&*self.context, &self.id, self.data.as_ref(), desc);
 

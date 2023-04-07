@@ -1498,8 +1498,12 @@ impl crate::Queue<super::Api> for super::Queue {
 
         if let Some((fence, value)) = signal_fence {
             fence.maintain(gl);
-            let sync = unsafe { gl.fence_sync(glow::SYNC_GPU_COMMANDS_COMPLETE, 0) }
-                .map_err(|_| crate::DeviceError::OutOfMemory)?;
+            // shohei: error - fence
+            let sync =
+                unsafe { gl.fence_sync(glow::SYNC_GPU_COMMANDS_COMPLETE, 0) }.map_err(|err| {
+                    log::info!("shohei err {err}");
+                    crate::DeviceError::OutOfMemory
+                })?;
             fence.pending.push((value, sync));
         }
 

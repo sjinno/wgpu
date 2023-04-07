@@ -731,6 +731,7 @@ impl crate::Context for Context {
         let global = &self.0;
         let error = wgc::gfx_select!(device => global.surface_configure(*surface, *device, config));
         if let Some(e) = error {
+            log::info!("shohei e {e}");
             self.handle_error_fatal(e, "Surface::configure");
         } else {
             *surface_data.configured_device.lock() = Some(*device);
@@ -1241,11 +1242,13 @@ impl crate::Context for Context {
         desc: &crate::BufferDescriptor<'_>,
     ) -> (Self::BufferId, Self::BufferData) {
         let global = &self.0;
+        // shohei: error - buffer
         let (id, error) = wgc::gfx_select!(device => global.device_create_buffer(
             *device,
             &desc.map_label(|l| l.map(Borrowed)),
             ()
         ));
+
         if let Some(cause) = error {
             self.handle_error(
                 &device_data.error_sink,
@@ -2246,11 +2249,13 @@ impl crate::Context for Context {
             .collect::<SmallVec<[_; 4]>>();
 
         let global = &self.0;
+
         let index = match wgc::gfx_select!(*queue => global.queue_submit(*queue, &temp_command_buffers))
         {
             Ok(index) => index,
             Err(err) => self.handle_error_fatal(err, "Queue::submit"),
         };
+
         (Unused, index)
     }
 

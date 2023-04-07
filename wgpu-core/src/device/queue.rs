@@ -1342,6 +1342,7 @@ impl<G: GlobalIdentityHandlerFactory> Global<G> {
                             .flat_map(|pool_execution| pool_execution.cmd_buffers.iter()),
                     )
                     .collect::<Vec<_>>();
+
                 unsafe {
                     queue
                         .submit(&refs, Some((fence, submit_index)))
